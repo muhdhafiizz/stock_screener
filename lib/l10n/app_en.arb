@@ -1,0 +1,83 @@
+{
+    "language":"English",
+    "@language":{
+        "description": "Current language"
+    },
+    "signOut":"Sign Out",
+    "@signOut": {
+        "description": "Sign Out"
+    },
+    "name":"Name",
+    "@name": {
+        "description": "Name"
+    },
+    "email":"Email",
+    "@email": {
+        "description": "Email"
+    },
+    "home":"Home",
+    "@home": {
+        "description": "Home"
+    },
+    "profile":"Profile",
+    "@profile": {
+        "description": "Profile"
+    },
+    "favorite":"Favorite",
+    "@favorite": {
+        "description": "Favorite"
+    },
+    "restaurantsNearMe":"Restaurants Near Me",
+    "@restaurantsNearMe": {
+        "description": "Restaurant Near Me"
+    },
+    "recipes":"Recipes",
+    "@recipes": {
+        "description": "Recipes"
+    },
+    "typeOfMeals":"Type of Meals",
+    "@typeOfMeals": {
+        "description": "Type of Meals"
+    },
+    "ingridients":"Ingridients",
+    "@ingridients": {
+        "description": "Ingridients"
+    },
+    "instructions":"Instructions ",
+    "@instructions": {
+        "description": "Instructions"
+    },
+    "nutritionData":"Nutrition Data",
+    "@nutritionData": {
+        "description": "Nutrition Data"
+    },
+    "enterIngridient":"Enter Ingridient",
+    "@enterIngridient": {
+        "description": "Enter Ingridient"
+    },
+    "searchNutrition":"Search Nutrition Data",
+    "@searchNutrition": {
+        "description": "Search Nutrition Data"
+    },
+    "welcome":"Welcome",
+    "@welcome": {
+        "description": "Welcome"
+    },
+    "search":"Search",
+    "@search": {
+        "description": "Search"
+    },
+    "watchlist":"Watchlist",
+    "@watchlist": {
+        "description": "Watchlist"
+    },
+    "stockList":"Stock List",
+    "@stockList": {
+        "description": "Stock List"
+    },
+    "clearCache":"Clear cache",
+    "@clearCache": {
+        "description": "Clear cache"
+    }
+
+}

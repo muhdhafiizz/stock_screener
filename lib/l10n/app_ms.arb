@@ -1,0 +1,22 @@
+{
+    "language": "Bahasa Malaysia",
+    "signOut": "Log Keluar",
+    "name": "Nama",
+    "email": "E-mel",
+    "home": "Laman Muka",
+    "profile": "Profil",
+    "favorite": "Kegemaran",
+    "restaurantsNearMe": "Restoran Berdekatan",
+    "nutritionData": "Data Pemakanan",
+    "recipes": "Resipi",
+    "typeOfMeals": "Jenis Masakan", 
+    "ingredients": "Bahan",
+    "instructions": "Cara Penyediaan",
+    "enterIngridient":"Sila masukkan sukatan bahan",
+    "searchNutrition":"Cari Data Pemakanan",
+    "welcome":"Selamat datang",
+    "search":"Carian",
+    "watchlist":"Senarai Pantauan",
+    "stockList":"Senarai Stok",
+    "clearCache":"Bersihkan cache"
+}
