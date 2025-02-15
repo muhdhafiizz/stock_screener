@@ -1,17 +1,47 @@
-# stock_screener
+# Stock Screener App
 
-A new Flutter project.
+## Introduction
+The Stock Screener App is designed to help users analyze and track stocks efficiently. It provides authentication, a stock list, the ability to add stocks to a watchlist, and a detailed company overview.
 
-## Getting Started
+## Setup Instructions
 
-This project is a starting point for a Flutter application.
+### Prerequisites
+Ensure you have the following installed:
+- Flutter SDK
+- Dart
+- Android Studio/Xcode (for mobile development)
+- A GitHub account with repository access
 
-A few resources to get you started if this is your first Flutter project:
+### Installation Steps
+1. Clone the repository:
+   ```sh
+   git clone https://github.com/your-username/stock-screener-app.git
+2. cd stock-screener-app
+3. flutter pub get
+4. flutter run
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Architecture Overview
+The app follows the Clean Architecture principle with Provider for state management.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-# stock_screener
+### Layers:
+- Presentation Layer: UI components built with Flutter widgets.
+- Application Layer: Business logic and state management using Provider.
+- Data Layer: Handles API requests and local storage.
+
+### Technologies Used:
+- State Management: Provider
+- Networking: HTTP for API calls
+- Local Storage: Hive for caching
+- Authentication: Firebase Authentication
+
+### Features:
+- User Authentication: Secure login and signup using Firebase.
+- Stock List: Browse and search stocks with real-time data.
+- Watchlist: Add and manage favorite stocks.
+- Company Overview: View key details, financial data, and performance.
+
+## Future Improvements
+- Implement real-time stock price updates using WebSockets.
+- Integrate AI-based stock recommendations.
+- Introduce dark mode for better user experience.
+
