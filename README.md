@@ -38,7 +38,7 @@ The app follows the Clean Architecture principle with Provider for state managem
 - User Authentication: Secure login and signup using Firebase.
 - Stock List: Browse and search stocks with real-time data.
 - Watchlist: Add and manage favorite stocks.
-- Company Overview: View key details, financial data, and performance.
+- Company Overview: View market cap, 52 weeks low, 52 weeks high, dividend yield and history chart per year.
 
 ## Future Improvements
 - Implement real-time stock price updates using WebSockets.
