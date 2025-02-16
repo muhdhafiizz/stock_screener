@@ -41,3 +41,8 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+/cmdline-tools/
+/.gradle/
+/.dart_tool/
+/build/
+
