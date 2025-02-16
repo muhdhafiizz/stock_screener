@@ -15,10 +15,10 @@ Ensure you have the following installed:
 ### Installation Steps
 1. Clone the repository:
    ```sh
-   git clone https://github.com/your-username/stock-screener-app.git
+   git clone https://github.com/muhdhafiizz/stock-screener-app.git
 2. cd stock-screener-app
-3. flutter pub get
-4. flutter run
+4. flutter pub get
+5. flutter run
 
 ## Architecture Overview
 The app follows the Clean Architecture principle with Provider for state management.
