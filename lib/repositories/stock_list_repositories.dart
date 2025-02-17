@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart' as http;
@@ -10,12 +12,14 @@ class StockRepository {
   static const String _cacheBoxName = "stock_cache";
 
   late final Box<StockListing> _cacheBox;
+  bool _rateLimitExceeded = false;
+  bool get rateLimitExceeded => _rateLimitExceeded;
 
   StockRepository() {
     _cacheBox = Hive.box<StockListing>(_cacheBoxName);
   }
 
-  Future<List<StockListing>> fetchStockListings({String? date, String state = "active"}) async {
+  Future<List<StockListing>?> fetchStockListings({String? date, String state = "active"}) async {
     if (_cacheBox.isNotEmpty) {
       debugPrint("📦 Using cached stock data");
       return _cacheBox.values.toList();
@@ -27,12 +31,21 @@ class StockRepository {
 
     debugPrint("🌍 Fetching stock listings from: $uri");
     final response = await http.get(uri);
+
+    _rateLimitExceeded = false; 
     
     debugPrint("📡 API Response Status: ${response.statusCode}");
     if (response.statusCode == 200) {
+      final Map<String, dynamic> jsonData = json.decode(response.body);
       if (response.body.trim().isEmpty || response.body == "{}") {
         debugPrint("⚠️ No data received from API.");
         return [];
+      }
+
+      if (jsonData.containsKey("Information") || (jsonData.containsKey("Note"))) {
+        debugPrint("⚠️ API rate limit reached.");
+        _rateLimitExceeded = true; 
+        return null; 
       }
 
       try {

@@ -4,15 +4,17 @@ import '../model/stock_listing_model.dart';
 import '../repositories/stock_list_repositories.dart';
 
 class StockProvider with ChangeNotifier {
-  List<StockListing> _stocks = [];
+  List<StockListing>? _stocks = []; // Make _stocks nullable
   List<StockListing> _filteredStocks = [];
   bool _isLoading = false;
+  bool _apiRateLimited = false;
   String? _errorMessage;
   late Box<StockListing> _stockBox;
 
-  List<StockListing> get stocks => _stocks;
+  List<StockListing>? get stocks => _stocks;
   List<StockListing> get filteredStocks => _filteredStocks;
   bool get isLoading => _isLoading;
+  bool get apiRateLimited => _apiRateLimited;
   String? get errorMessage => _errorMessage;
 
   Future<void> initBox() async {
@@ -26,6 +28,7 @@ class StockProvider with ChangeNotifier {
   Future<void> fetchStocks() async {
     _isLoading = true;
     _errorMessage = null;
+    _apiRateLimited = false;
     notifyListeners();
 
     try {
@@ -34,7 +37,7 @@ class StockProvider with ChangeNotifier {
       if (_stockBox.isNotEmpty) {
         debugPrint("📦 Using cached stocks: ${_stockBox.values.toList()}");
         _stocks = _stockBox.values.toList();
-        _filteredStocks = List.from(_stocks);
+        _filteredStocks = List.from(_stocks!); 
         _isLoading = false;
         notifyListeners();
         return;
@@ -45,17 +48,23 @@ class StockProvider with ChangeNotifier {
       StockRepository repository = StockRepository();
       _stocks = await repository.fetchStockListings();
 
-      if (_stocks.isEmpty) {
+      if (_stocks == null || _stocks!.isEmpty) {
+        if (repository.rateLimitExceeded) {
+          _apiRateLimited = true;
+          _errorMessage = "API rate limit reached. Try again later.";
+        } else {
+          _errorMessage = "No stocks retrieved from API.";
+        }
         debugPrint("⚠️ No stocks retrieved from API.");
       } else {
-        debugPrint("✅ Stocks fetched: ${_stocks.length}");
+        debugPrint("✅ Stocks fetched: ${_stocks!.length}");
 
         await _stockBox.clear();
-        await _stockBox.addAll(_stocks);
+        await _stockBox.addAll(_stocks!);
         debugPrint("💾 Cached stocks saved.");
       }
 
-      _filteredStocks = List.from(_stocks);
+      _filteredStocks = List.from(_stocks!); // Ensure it's not null
     } catch (e) {
       _errorMessage = e.toString();
       debugPrint("❌ Error: $_errorMessage");
@@ -67,9 +76,9 @@ class StockProvider with ChangeNotifier {
 
   void searchStock(String query) {
     if (query.isEmpty) {
-      _filteredStocks = List.from(_stocks);
+      _filteredStocks = List.from(_stocks!); // Ensure it's not null
     } else {
-      _filteredStocks = _stocks
+      _filteredStocks = _stocks!
           .where((stock) =>
               stock.name.toLowerCase().contains(query.toLowerCase()) ||
               stock.symbol.toLowerCase().contains(query.toLowerCase()))

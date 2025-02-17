@@ -58,7 +58,6 @@ Widget _buildCompanyDetails(CompanyOverview company, BuildContext context) {
   WidgetsBinding.instance.addPostFrameCallback((_) {
     stockProvider.fetchStockChart(company.symbol);
   });
-  
 
   return Padding(
     padding: const EdgeInsets.all(20.0),
@@ -233,20 +232,28 @@ Widget _buildStockChart(BuildContext context, String symbol) {
                     leftTitles: AxisTitles(
                       sideTitles: SideTitles(
                         showTitles: true,
-                        interval: 50,
+                        interval: _dynamicIntervalForValues(
+                          stockProvider.stockHistory
+                              .map((e) => e.closingPrice)
+                              .toList(),
+                        ),
                         getTitlesWidget: (value, meta) {
-                          return Text(
-                            value.toStringAsFixed(0),
-                            style: const TextStyle(fontSize: 10),
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 4.0),
+                            child: Text(
+                              value.toStringAsFixed(0),
+                              style: const TextStyle(fontSize: 10),
+                              textAlign: TextAlign.right,
+                            ),
                           );
                         },
-                        reservedSize: 30,
+                        reservedSize: 40,
                       ),
                     ),
                     bottomTitles: AxisTitles(
                       sideTitles: SideTitles(
                         showTitles: true,
-                        interval: _calculateDynamicInterval(
+                        interval: _dynamicIntervalForDate(
                             stockProvider.stockHistory.length),
                         getTitlesWidget: (value, meta) {
                           int index = value.toInt();
@@ -256,15 +263,25 @@ Widget _buildStockChart(BuildContext context, String symbol) {
                                 stockProvider.stockHistory[index].date;
                             String year = fullDate.split("-")[0];
 
-                            return Text(
-                              year,
-                              style: const TextStyle(fontSize: 10),
-                            );
+                            double interval = _dynamicIntervalForDate(
+                                stockProvider.stockHistory.length);
+                            if (index % interval == 0) {
+                              return Text(
+                                year,
+                                style: const TextStyle(fontSize: 10),
+                              );
+                            }
                           }
                           return Container();
                         },
-                        reservedSize: 20,
+                        reservedSize: 30,
                       ),
+                    ),
+                    topTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    rightTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
                     ),
                   ),
                   borderData: FlBorderData(
@@ -344,16 +361,36 @@ String formatMarketCap(num value) {
   }
 }
 
-double _calculateDynamicInterval(int itemCount) {
+double _dynamicIntervalForDate(int itemCount) {
   if (itemCount <= 5) {
     return 1;
   } else if (itemCount <= 20) {
-    return 2;
+    return 5; // Increased gap
   } else if (itemCount <= 50) {
-    return 5;
+    return 10; // Increased gap
   } else if (itemCount <= 100) {
-    return 10;
+    return 20; // More spacing
   } else {
-    return (itemCount / 10).floorToDouble();
+    return (itemCount / 5).floorToDouble(); // Wider gaps for large datasets
+  }
+}
+
+double _dynamicIntervalForValues(List<double> values) {
+  if (values.isEmpty) return 1;
+
+  double minValue = values.reduce((a, b) => a < b ? a : b);
+  double maxValue = values.reduce((a, b) => a > b ? a : b);
+  double range = maxValue - minValue;
+
+  if (range <= 50) {
+    return 10;
+  } else if (range <= 200) {
+    return 20;
+  } else if (range <= 500) {
+    return 50;
+  } else if (range <= 1000) {
+    return 100;
+  } else {
+    return (range / 10).floorToDouble();
   }
 }

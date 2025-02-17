@@ -101,10 +101,20 @@ Widget _buildTopNavBar(BuildContext context) {
 Widget _buildStockList(BuildContext context) {
   final stockProvider = Provider.of<StockProvider>(context);
 
-  if (stockProvider.stocks.isEmpty) {
+  if (stockProvider.stocks == null || stockProvider.stocks!.isEmpty) {
     return const Center(
       child: Text(
         'Your stocklist is empty.\nPlease refresh.',
+        style: TextStyle(fontSize: 16, color: Colors.grey),
+        textAlign: TextAlign.center,
+      ),
+    );
+  }
+
+  if (stockProvider.apiRateLimited) {
+    return const Center(
+      child: Text(
+        "API limit has been reached.\nPlease try again later.",
         style: TextStyle(fontSize: 16, color: Colors.grey),
         textAlign: TextAlign.center,
       ),
@@ -119,11 +129,10 @@ Widget _buildStockList(BuildContext context) {
         crossAxisCount: 1,
         childAspectRatio: 0.6,
       ),
-      itemCount:
-          stockProvider.stocks.length > 4 ? 5 : stockProvider.stocks.length,
+      itemCount: stockProvider.stocks!.length > 4 ? 5 : stockProvider.stocks!.length,
       itemBuilder: (context, index) {
         if (index < 4) {
-          final StockListing stock = stockProvider.stocks[index];
+          final StockListing stock = stockProvider.stocks![index]; // Access safely
 
           return SizedBox(
             child: Card(
@@ -221,6 +230,7 @@ Widget _buildStockList(BuildContext context) {
     ),
   );
 }
+
 
 Widget _buildWatchlist() {
   return Consumer2<WatchlistProvider, StockPriceProvider>(

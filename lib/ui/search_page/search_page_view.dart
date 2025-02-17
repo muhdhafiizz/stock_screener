@@ -50,78 +50,80 @@ class SearchPageView extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               Expanded(
-                  child: searchProvider.filteredStocks.isEmpty
-                      ? Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Lottie.asset(
-                                'assets/animations/empty_list_green_animation.json',
-                                height: 200,
-                                width: 200,
-                              ),
-                              const SizedBox(height: 20),
-                              const Text("No results here."),
-                            ],
-                          ),
-                        )
-                      : Scrollbar(
-                          thickness: 6.0,
-                          radius: Radius.circular(10),
-                          child: ListView.builder(
-                            itemCount: searchProvider.filteredStocks.length,
-                            itemBuilder: (context, index) {
-                              final stock =
-                                  searchProvider.filteredStocks[index];
-                              return InkWell(
-                                onTap: () {
-                                  debugPrint(
-                                      "Navigating to CompanyOverviewView with symbol: ${stock.symbol}");
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => CompanyOverviewView(
-                                          symbol: stock.symbol),
-                                    ),
-                                  );
-                                },
-                                child: ListTile(
-                                  title: Text(stock.name),
-                                  subtitle: Text(
-                                      "Symbol: ${stock.symbol} | Exchange: ${stock.exchange}"),
-                                  trailing: Consumer<WatchlistProvider>(
-                                    builder:
-                                        (context, watchlistProvider, child) {
-                                      final isInWatchlist = watchlistProvider
-                                          .isInWatchlist(stock.symbol);
-                                      return IconButton(
-                                        icon: Icon(
-                                          isInWatchlist
-                                              ? Icons.check_circle
-                                              : Icons.add_circle,
-                                          color: isInWatchlist
-                                              ? Colors.grey
-                                              : Colors.green,
-                                        ),
-                                        onPressed: () {
-                                          if (!isInWatchlist) {
-                                            watchlistProvider
-                                                .addToWatchlist(stock);
-                                            _showSnackBar(
-                                                context,
-                                                "${stock.name} added to Watchlist!",
-                                                Colors.green);
-                                          }
-                                        },
-                                      );
-                                    },
+                child: (searchProvider.filteredStocks?.isEmpty ?? true)
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Lottie.asset(
+                              'assets/animations/empty_list_green_animation.json',
+                              height: 200,
+                              width: 200,
+                            ),
+                            const SizedBox(height: 20),
+                            const Text("No results here."),
+                          ],
+                        ),
+                      )
+                    : Scrollbar(
+                        thickness: 6.0,
+                        radius: Radius.circular(10),
+                        child: ListView.builder(
+                          itemCount: searchProvider.filteredStocks?.length ?? 0,
+                          itemBuilder: (context, index) {
+                            final stock = searchProvider.filteredStocks?[index];
+                            if (stock == null)
+                              return SizedBox.shrink(); // Handle null stock
+
+                            return InkWell(
+                              onTap: () {
+                                debugPrint(
+                                    "Navigating to CompanyOverviewView with symbol: ${stock.symbol}");
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => CompanyOverviewView(
+                                        symbol: stock.symbol),
                                   ),
+                                );
+                              },
+                              child: ListTile(
+                                title: Text(stock.name),
+                                subtitle: Text(
+                                    "Symbol: ${stock.symbol} | Exchange: ${stock.exchange}"),
+                                trailing: Consumer<WatchlistProvider>(
+                                  builder: (context, watchlistProvider, child) {
+                                    final isInWatchlist = watchlistProvider
+                                        .isInWatchlist(stock.symbol);
+                                    return IconButton(
+                                      icon: Icon(
+                                        isInWatchlist
+                                            ? Icons.check_circle
+                                            : Icons.add_circle,
+                                        color: isInWatchlist
+                                            ? Colors.grey
+                                            : Colors.green,
+                                      ),
+                                      onPressed: () {
+                                        if (!isInWatchlist) {
+                                          watchlistProvider
+                                              .addToWatchlist(stock);
+                                          _showSnackBar(
+                                              context,
+                                              "${stock.name} added to Watchlist!",
+                                              Colors.green);
+                                        }
+                                      },
+                                    );
+                                  },
                                 ),
-                              );
-                            },
-                          ),
-                        )),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+              ),
             ],
           ),
         ),

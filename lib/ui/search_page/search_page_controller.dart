@@ -7,10 +7,10 @@ class SearchProvider with ChangeNotifier {
   final StockRepository _repository = StockRepository();
   
   final TextEditingController searchController = TextEditingController();
-  List<StockListing> _allStocks = [];
-  List<StockListing> _filteredStocks = [];
+  List<StockListing>? _allStocks = [];
+  List<StockListing>? _filteredStocks = [];
 
-  List<StockListing> get filteredStocks => _filteredStocks;
+  List<StockListing>? get filteredStocks => _filteredStocks;
 
   SearchProvider() {
     _loadStocks();
@@ -25,7 +25,7 @@ class SearchProvider with ChangeNotifier {
 
   void _onSearchChanged() {
     final query = searchController.text.toLowerCase();
-    _filteredStocks = _allStocks.where((stock) {
+    _filteredStocks = _allStocks?.where((stock) {
       return stock.name.toLowerCase().contains(query) ||
              stock.symbol.toLowerCase().contains(query);
     }).toList();
