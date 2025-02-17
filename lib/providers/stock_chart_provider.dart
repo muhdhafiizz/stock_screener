@@ -31,45 +31,45 @@ class StockChartProviders with ChangeNotifier {
       return;
     }
 
-    final box = await Hive.openBox<List>(boxName);
-
-    if (box.containsKey(symbol)) {
-      debugPrint("📦 Using cached data for $symbol");
-      stockHistory = box.get(symbol)!.cast<StockChartData>();
-      notifyListeners();
-      return;
-    }
-
-    stockHistory = [];
-    notifyListeners();
-
     isLoading = true;
     errorMessage = null;
     notifyListeners();
 
     try {
+      final box = await Hive.openBox<List>(boxName);
+
+      if (box.containsKey(symbol)) {
+        debugPrint("📦 Using cached data for $symbol");
+        var cached = box.get(symbol);
+        if (cached != null && cached.isNotEmpty) {
+          stockHistory = cached.cast<StockChartData>();
+          isLoading = false;
+          notifyListeners();
+          return;
+        }
+      }
+
       debugPrint("🌍 Calling repository to get data for $symbol...");
       List<StockChartData> fetchedData =
           await _repository.getStockHistory(symbol);
 
-      if (fetchedData.isEmpty) {
-        debugPrint("⚠️ No stock data returned from API.");
-      } else {
+      if (fetchedData.isNotEmpty) {
         debugPrint("📈 Fetched ${fetchedData.length} data points for $symbol.");
+        _stockData[symbol] = fetchedData;
+        stockHistory = fetchedData;
+        await box.put(symbol, stockHistory);
+        debugPrint("✅ Stored in Hive for offline access.");
+      } else {
+        debugPrint("⚠️ No stock data returned from API.");
+        stockHistory = [];
       }
-
-      _stockData[symbol] = fetchedData;
-      stockHistory = _stockData[symbol]!;
-
-      await box.put(symbol, stockHistory);
-      debugPrint("✅ Stored in Hive for offline access.");
     } catch (e) {
       debugPrint("❌ Error fetching stock data for $symbol: ${e.toString()}");
       errorMessage = "Failed to fetch data: ${e.toString()}";
       stockHistory = [];
+    } finally {
+      isLoading = false;
+      notifyListeners();
     }
-
-    isLoading = false;
-    notifyListeners();
   }
 }

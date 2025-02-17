@@ -13,38 +13,57 @@ import '../company_overview/company_overview_view.dart';
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
+  Future<void> _refreshStockList(BuildContext context) async {
+    final stockProvider = Provider.of<StockProvider>(context, listen: false);
+    await stockProvider.fetchStocks();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.all(20),
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            _buildTopNavBar(context),
-            SizedBox(height: 30),
-            _buildSectionTitle("Stock List"),
-            _buildStockList(context),
-            SizedBox(height: 30),
-            GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const WatchlistPageView()),
-                );
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _buildSectionTitle("Watchlist"),
-                  const Icon(Icons.arrow_forward),
-                ],
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildTopNavBar(context),
+              const SizedBox(height: 10),
+              Expanded(
+                child: RefreshIndicator(
+                  backgroundColor: Colors.black,
+                  color: Colors.green,
+                  onRefresh: () => _refreshStockList(context),
+                  child: ListView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    children: [
+                      _buildSectionTitle("Stock List"),
+                      _buildStockList(context),
+                      const SizedBox(height: 30),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const WatchlistPageView(),
+                            ),
+                          );
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            _buildSectionTitle("Watchlist"),
+                            const Icon(Icons.arrow_forward),
+                          ],
+                        ),
+                      ),
+                      _buildWatchlist(),
+                    ],
+                  ),
+                ),
               ),
-            ),
-            const SizedBox(height: 20),
-            _buildWatchlist()
-          ]),
+            ],
+          ),
         ),
       ),
     );
@@ -82,6 +101,16 @@ Widget _buildTopNavBar(BuildContext context) {
 Widget _buildStockList(BuildContext context) {
   final stockProvider = Provider.of<StockProvider>(context);
 
+  if (stockProvider.stocks.isEmpty) {
+    return const Center(
+      child: Text(
+        'Your stocklist is empty.\nPlease refresh.',
+        style: TextStyle(fontSize: 16, color: Colors.grey),
+        textAlign: TextAlign.center,
+      ),
+    );
+  }
+
   return SizedBox(
     height: 150,
     child: GridView.builder(
@@ -107,8 +136,7 @@ Widget _buildStockList(BuildContext context) {
                 padding: const EdgeInsets.all(8.0),
                 child: InkWell(
                   onTap: () {
-                    debugPrint(
-                        "Stock Symbol: '${stock.symbol}'"); 
+                    debugPrint("Stock Symbol: '${stock.symbol}'");
 
                     if (stock.symbol.trim().toLowerCase() == "n/a" ||
                         stock.symbol.trim().isEmpty) {
@@ -203,6 +231,9 @@ Widget _buildWatchlist() {
         for (var stock in watchlist) {
           if (!stockPriceProvider.stockPrices.containsKey(stock.symbol)) {
             stockPriceProvider.fetchStockPrice(stock.symbol);
+            print("Fetching price for: \${stock.symbol}");
+          } else {
+            print("Price already available for: \${stock.symbol}");
           }
         }
       });
@@ -251,76 +282,90 @@ Widget _buildWatchlist() {
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                stock.name,
-                                style: const TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.bold),
+                              Expanded(
+                                child: Text(
+                                  stock.name,
+                                  style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold),
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 2,
+                                ),
                               ),
                               const SizedBox(height: 5),
-                              (stockData == null ||
-                                      stockPriceProvider.isLoading)
-                                  ? const Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Text("Price: "),
-                                            SizedBox(width: 5),
-                                            ShimmerLoadingWidget(
-                                                width: 40, height: 14),
-                                          ],
-                                        ),
-                                        SizedBox(height: 8),
-                                        Row(
-                                          children: [
-                                            Text("Change: "),
-                                            SizedBox(width: 5),
-                                            ShimmerLoadingWidget(
-                                                width: 50, height: 14),
-                                          ],
-                                        ),
-                                      ],
+                              (stockData == null)
+                                  ? const Text(
+                                      "No data available",
+                                      style: TextStyle(
+                                          fontSize: 14, color: Colors.grey),
                                     )
-                                  : Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
+                                  : stockPriceProvider.isLoading
+                                      ? const Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
-                                            const Text(
-                                              "Price: ",
-                                              style: TextStyle(fontSize: 14),
+                                            Row(
+                                              children: [
+                                                Text("Price: "),
+                                                SizedBox(width: 5),
+                                                ShimmerLoadingWidget(
+                                                    width: 40, height: 14),
+                                              ],
                                             ),
-                                            Text(
-                                              '${stockData.price.toStringAsFixed(2)}',
-                                              style: const TextStyle(
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.bold),
+                                            SizedBox(height: 8),
+                                            Row(
+                                              children: [
+                                                Text("Change: "),
+                                                SizedBox(width: 5),
+                                                ShimmerLoadingWidget(
+                                                    width: 50, height: 14),
+                                              ],
                                             ),
                                           ],
-                                        ),
-                                        Row(
+                                        )
+                                      : Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
-                                            const Text(
-                                              "Change: ",
-                                              style: TextStyle(fontSize: 14),
+                                            Row(
+                                              children: [
+                                                const Text(
+                                                  "Price: ",
+                                                  style:
+                                                      TextStyle(fontSize: 14),
+                                                ),
+                                                Text(
+                                                  '${stockData.price.toStringAsFixed(2)}',
+                                                  style: const TextStyle(
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                              ],
                                             ),
-                                            Text(
-                                              "${stockData.changePercent.toStringAsFixed(2)}%",
-                                              style: TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.bold,
-                                                color:
-                                                    stockData.changePercent >= 0
+                                            Row(
+                                              children: [
+                                                const Text(
+                                                  "Change: ",
+                                                  style:
+                                                      TextStyle(fontSize: 14),
+                                                ),
+                                                Text(
+                                                  "${stockData.changePercent.toStringAsFixed(2)}%",
+                                                  style: TextStyle(
+                                                    fontSize: 14,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: stockData
+                                                                .changePercent >=
+                                                            0
                                                         ? Colors.green
                                                         : Colors.red,
-                                              ),
+                                                  ),
+                                                ),
+                                              ],
                                             ),
                                           ],
-                                        ),
-                                      ],
-                                    )
+                                        )
                             ],
                           ),
                         ),

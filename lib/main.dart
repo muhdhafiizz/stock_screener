@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:stock_screener/firebase_options.dart';
 import 'package:stock_screener/providers/price_percentage_provider.dart';
 import 'package:stock_screener/providers/watchlist_provider.dart';
+import 'package:stock_screener/repositories/stock_price_repository.dart';
 import 'package:stock_screener/ui/bottom_navbar/bottom_navbar_view.dart';
 import 'package:stock_screener/ui/landing_page/landing_page_view.dart';
 import 'package:stock_screener/ui/profile_page/profile_page_controller.dart';
@@ -65,7 +66,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => SearchProvider()),
         ChangeNotifierProvider(create: (_) => WatchlistProvider()),
         ChangeNotifierProvider(create: (_) => StockChartProviders(stockRepository)),
-        ChangeNotifierProvider(create: (_) => StockPriceProvider()),
+        ChangeNotifierProvider(create: (_) => StockPriceProvider(StockPriceRepository())),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

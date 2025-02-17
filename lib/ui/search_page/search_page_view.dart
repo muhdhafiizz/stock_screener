@@ -57,7 +57,7 @@ class SearchPageView extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Lottie.asset(
-                                'assets/animations/empty_list.json',
+                                'assets/animations/empty_list_green_animation.json',
                                 height: 200,
                                 width: 200,
                               ),

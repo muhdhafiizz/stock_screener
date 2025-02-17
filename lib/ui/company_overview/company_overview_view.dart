@@ -24,58 +24,28 @@ class CompanyOverviewView extends StatelessWidget {
     });
 
     return Scaffold(
-      appBar: AppBar(title: Text("Company Overview")),
+      appBar: AppBar(title: const Text("Company Overview")),
       body: Consumer<CompanyProvider>(
         builder: (context, provider, child) {
           debugPrint("Loading state: ${provider.isLoading}");
 
-          if (provider.apiRateLimited) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Lottie.asset(
-                    'assets/animations/api_limit_reached_animation.json',
-                    height: 200,
-                    width: 200,
-                  ),
-                  const SizedBox(height: 10),
-                  const Text(
-                    "Oops.. You have reached your API limit.\nPlease try again later.",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
-            );
-          }
-
-          if (provider.company == null) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Lottie.asset(
-                    'assets/animations/empty_list_green_animation.json',
-                    height: 200,
-                    width: 200,
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    provider.errorMessage ?? "No data available",
-                    style: const TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          return _buildCompanyDetails(provider.company!, context);
+          return _buildBody(provider, context);
         },
       ),
     );
   }
+}
+
+Widget _buildBody(CompanyProvider provider, BuildContext context) {
+  if (provider.apiRateLimited) {
+    return _buildApiLimitReached();
+  }
+
+  if (provider.company == null) {
+    return _buildNoData(provider);
+  }
+
+  return _buildCompanyDetails(provider.company!, context);
 }
 
 Widget _buildCompanyDetails(CompanyOverview company, BuildContext context) {
@@ -88,6 +58,7 @@ Widget _buildCompanyDetails(CompanyOverview company, BuildContext context) {
   WidgetsBinding.instance.addPostFrameCallback((_) {
     stockProvider.fetchStockChart(company.symbol);
   });
+  
 
   return Padding(
     padding: const EdgeInsets.all(20.0),
@@ -216,107 +187,150 @@ void _showSnackBar(BuildContext context, String message, Color color) {
 }
 
 Widget _buildStockChart(BuildContext context, String symbol) {
-  return Consumer<StockChartProviders>(
-    builder: (context, stockProvider, child) {
-      debugPrint("StockChartProviders - isLoading: ${stockProvider.isLoading}, "
-          "Error: ${stockProvider.errorMessage}, "
-          "StockHistory Length: ${stockProvider.stockHistory.length}");
+  return Selector<StockChartProviders, bool>(
+    selector: (_, provider) => provider.isLoading,
+    builder: (context, isLoading, child) {
+      debugPrint("StockChartProviders - isLoading: $isLoading");
 
-      if (stockProvider.isLoading) {
-        return const Center(
-          child: ShimmerLoadingWidget(width: 250, height: 14)
-        );
-      } else if (stockProvider.errorMessage != null) {
-        return Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Lottie.asset(
-                'assets/animations/empty_list_green_animation.json',
-                height: 200,
-                width: 200,
-              ),
-              const SizedBox(height: 20),
-              Text(
-                stockProvider.errorMessage ?? "No data available",
-                style:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-        );
-      } else if (stockProvider.stockHistory.isEmpty) {
-        return const Center(child: Text("No data available"));
-      }
-
-      int itemCount = stockProvider.stockHistory.length;
-
-      return Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SizedBox(
-          height: 300,
-          child: LineChart(
-            LineChartData(
-              gridData: const FlGridData(show: false),
-              titlesData: FlTitlesData(
-                leftTitles: AxisTitles(
-                  sideTitles: SideTitles(
-                    showTitles: true,
-                    interval: 50,
-                    getTitlesWidget: (value, meta) {
-                      return Text(
-                        value.toStringAsFixed(0),
-                        style: const TextStyle(fontSize: 10),
-                      );
-                    },
-                    reservedSize: 30,
+      return Consumer<StockChartProviders>(
+        builder: (context, stockProvider, child) {
+          if (stockProvider.isLoading) {
+            return const Center(
+                child: ShimmerLoadingWidget(width: 250, height: 14));
+          } else if (stockProvider.errorMessage != null) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Lottie.asset(
+                    'assets/animations/empty_list_green_animation.json',
+                    height: 200,
+                    width: 200,
                   ),
-                ),
-                bottomTitles: AxisTitles(
-                  sideTitles: SideTitles(
-                    showTitles: true,
-                    interval: _calculateDynamicInterval(
-                        stockProvider.stockHistory.length),
-                    getTitlesWidget: (value, meta) {
-                      int index = value.toInt();
-                      if (index >= 0 &&
-                          index < stockProvider.stockHistory.length) {
-                        String fullDate =
-                            stockProvider.stockHistory[index].date;
-                        String year = fullDate.split("-")[0];
-
-                        return Text(
-                          year,
-                          style: const TextStyle(fontSize: 10),
-                        );
-                      }
-                      return Container();
-                    },
-                    reservedSize: 20,
+                  const SizedBox(height: 20),
+                  Text(
+                    stockProvider.errorMessage ?? "No data available",
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.bold),
                   ),
+                ],
+              ),
+            );
+          } else if (stockProvider.stockHistory.isEmpty) {
+            return const Center(child: Text("No data available"));
+          }
+
+          int itemCount = stockProvider.stockHistory.length;
+
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: SizedBox(
+              height: 300,
+              child: LineChart(
+                LineChartData(
+                  gridData: const FlGridData(show: false),
+                  titlesData: FlTitlesData(
+                    leftTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        interval: 50,
+                        getTitlesWidget: (value, meta) {
+                          return Text(
+                            value.toStringAsFixed(0),
+                            style: const TextStyle(fontSize: 10),
+                          );
+                        },
+                        reservedSize: 30,
+                      ),
+                    ),
+                    bottomTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        interval: _calculateDynamicInterval(
+                            stockProvider.stockHistory.length),
+                        getTitlesWidget: (value, meta) {
+                          int index = value.toInt();
+                          if (index >= 0 &&
+                              index < stockProvider.stockHistory.length) {
+                            String fullDate =
+                                stockProvider.stockHistory[index].date;
+                            String year = fullDate.split("-")[0];
+
+                            return Text(
+                              year,
+                              style: const TextStyle(fontSize: 10),
+                            );
+                          }
+                          return Container();
+                        },
+                        reservedSize: 20,
+                      ),
+                    ),
+                  ),
+                  borderData: FlBorderData(
+                    show: true,
+                    border: Border.all(color: Colors.black, width: 1),
+                  ),
+                  lineBarsData: [
+                    LineChartBarData(
+                      spots: List.generate(itemCount, (index) {
+                        final data = stockProvider.stockHistory[index];
+                        return FlSpot(index.toDouble(), data.closingPrice);
+                      }),
+                      isCurved: true,
+                      barWidth: 3,
+                      color: Colors.green.withOpacity(0.8),
+                      isStrokeCapRound: true,
+                    ),
+                  ],
                 ),
               ),
-              borderData: FlBorderData(
-                show: true,
-                border: Border.all(color: Colors.black, width: 1),
-              ),
-              lineBarsData: [
-                LineChartBarData(
-                  spots: List.generate(itemCount, (index) {
-                    final data = stockProvider.stockHistory[index];
-                    return FlSpot(index.toDouble(), data.closingPrice);
-                  }),
-                  isCurved: true,
-                  barWidth: 3,
-                  color: Colors.green.withOpacity(0.8),
-                  isStrokeCapRound: true,
-                ),
-              ],
             ),
-          ),
-        ),
+          );
+        },
       );
     },
+  );
+}
+
+Widget _buildApiLimitReached() {
+  return Center(
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Lottie.asset(
+          'assets/animations/api_limit_reached_animation.json',
+          height: 200,
+          width: 200,
+        ),
+        const SizedBox(height: 10),
+        const Text(
+          "Oops.. You have reached your API limit.\nPlease try again later.",
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          textAlign: TextAlign.center,
+        ),
+      ],
+    ),
+  );
+}
+
+Widget _buildNoData(CompanyProvider provider) {
+  return Center(
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Lottie.asset(
+          'assets/animations/empty_list_green_animation.json',
+          height: 200,
+          width: 200,
+        ),
+        const SizedBox(height: 10),
+        Text(
+          provider.errorMessage ?? "No data available",
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+      ],
+    ),
   );
 }
 
