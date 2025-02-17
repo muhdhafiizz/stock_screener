@@ -74,7 +74,7 @@ class SearchPageView extends StatelessWidget {
                           itemBuilder: (context, index) {
                             final stock = searchProvider.filteredStocks?[index];
                             if (stock == null)
-                              return SizedBox.shrink(); // Handle null stock
+                              return SizedBox.shrink(); 
 
                             return InkWell(
                               onTap: () {

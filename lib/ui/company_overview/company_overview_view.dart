@@ -365,13 +365,13 @@ double _dynamicIntervalForDate(int itemCount) {
   if (itemCount <= 5) {
     return 1;
   } else if (itemCount <= 20) {
-    return 5; // Increased gap
+    return 5; 
   } else if (itemCount <= 50) {
-    return 10; // Increased gap
+    return 10;
   } else if (itemCount <= 100) {
-    return 20; // More spacing
+    return 20; 
   } else {
-    return (itemCount / 5).floorToDouble(); // Wider gaps for large datasets
+    return (itemCount / 5).floorToDouble(); 
   }
 }
 

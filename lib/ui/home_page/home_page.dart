@@ -132,7 +132,7 @@ Widget _buildStockList(BuildContext context) {
       itemCount: stockProvider.stocks!.length > 4 ? 5 : stockProvider.stocks!.length,
       itemBuilder: (context, index) {
         if (index < 4) {
-          final StockListing stock = stockProvider.stocks![index]; // Access safely
+          final StockListing stock = stockProvider.stocks![index]; 
 
           return SizedBox(
             child: Card(

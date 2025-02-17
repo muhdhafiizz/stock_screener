@@ -14,7 +14,6 @@ class StockPriceRepository {
 
     final Box stockBox = Hive.box('stock_prices_cache');
 
-    // Check cache first
     final String? cachedData = stockBox.get("stock_$symbol");
     final int? cachedTime = stockBox.get("stock_time_$symbol");
 

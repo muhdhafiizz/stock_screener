@@ -4,7 +4,7 @@ import '../model/stock_listing_model.dart';
 import '../repositories/stock_list_repositories.dart';
 
 class StockProvider with ChangeNotifier {
-  List<StockListing>? _stocks = []; // Make _stocks nullable
+  List<StockListing>? _stocks = []; 
   List<StockListing> _filteredStocks = [];
   bool _isLoading = false;
   bool _apiRateLimited = false;
@@ -64,7 +64,7 @@ class StockProvider with ChangeNotifier {
         debugPrint("💾 Cached stocks saved.");
       }
 
-      _filteredStocks = List.from(_stocks!); // Ensure it's not null
+      _filteredStocks = List.from(_stocks!);
     } catch (e) {
       _errorMessage = e.toString();
       debugPrint("❌ Error: $_errorMessage");
@@ -76,7 +76,7 @@ class StockProvider with ChangeNotifier {
 
   void searchStock(String query) {
     if (query.isEmpty) {
-      _filteredStocks = List.from(_stocks!); // Ensure it's not null
+      _filteredStocks = List.from(_stocks!);
     } else {
       _filteredStocks = _stocks!
           .where((stock) =>
