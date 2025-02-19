@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:stock_screener/providers/watchlist_provider.dart';
 import 'package:stock_screener/ui/search_page/search_page_view.dart';
@@ -101,22 +102,41 @@ Widget _buildTopNavBar(BuildContext context) {
 Widget _buildStockList(BuildContext context) {
   final stockProvider = Provider.of<StockProvider>(context);
 
-  if (stockProvider.stocks == null || stockProvider.stocks!.isEmpty) {
+  if (stockProvider.apiRateLimited) {
     return const Center(
-      child: Text(
-        'Your stocklist is empty.\nPlease refresh.',
-        style: TextStyle(fontSize: 16, color: Colors.grey),
-        textAlign: TextAlign.center,
+      child: Padding(
+        padding: EdgeInsets.all(20.0),
+        child: Column(
+          children: [
+            Icon(
+              Icons.warning,
+              color: Colors.red,
+            ),
+            Text(
+              "API limit has been reached.\nPlease try again later.",
+              style: TextStyle(fontSize: 16, color: Colors.grey),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  if (stockProvider.apiRateLimited) {
+  if (stockProvider.stocks == null || stockProvider.stocks!.isEmpty) {
     return const Center(
-      child: Text(
-        "API limit has been reached.\nPlease try again later.",
-        style: TextStyle(fontSize: 16, color: Colors.grey),
-        textAlign: TextAlign.center,
+      child: Padding(
+        padding: EdgeInsets.all(20.0),
+        child: Column(
+          children: [
+            Icon(Icons.sentiment_dissatisfied_sharp),
+            Text(
+              'Your stocklist is empty.\nPlease refresh.',
+              style: TextStyle(fontSize: 16, color: Colors.grey),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -129,10 +149,11 @@ Widget _buildStockList(BuildContext context) {
         crossAxisCount: 1,
         childAspectRatio: 0.6,
       ),
-      itemCount: stockProvider.stocks!.length > 4 ? 5 : stockProvider.stocks!.length,
+      itemCount:
+          stockProvider.stocks!.length > 4 ? 5 : stockProvider.stocks!.length,
       itemBuilder: (context, index) {
         if (index < 4) {
-          final StockListing stock = stockProvider.stocks![index]; 
+          final StockListing stock = stockProvider.stocks![index];
 
           return SizedBox(
             child: Card(
@@ -146,21 +167,6 @@ Widget _buildStockList(BuildContext context) {
                 child: InkWell(
                   onTap: () {
                     debugPrint("Stock Symbol: '${stock.symbol}'");
-
-                    if (stock.symbol.trim().toLowerCase() == "n/a" ||
-                        stock.symbol.trim().isEmpty) {
-                      debugPrint("⚠️ API limit reached. Showing Snackbar.");
-
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text(
-                              "API limit has been reached. Please try again later."),
-                          duration: Duration(seconds: 2),
-                        ),
-                      );
-
-                      return;
-                    }
 
                     debugPrint(
                         "✅ Navigating to CompanyOverviewView with symbol: ${stock.symbol}");
@@ -231,7 +237,6 @@ Widget _buildStockList(BuildContext context) {
   );
 }
 
-
 Widget _buildWatchlist() {
   return Consumer2<WatchlistProvider, StockPriceProvider>(
     builder: (context, watchlistProvider, stockPriceProvider, child) {
@@ -250,10 +255,18 @@ Widget _buildWatchlist() {
 
       return watchlist.isEmpty
           ? const Center(
-              child: Text(
-                "Your watchlist is currently empty.\nPlease select a stock.",
-                style: TextStyle(fontSize: 16, color: Colors.grey),
-                textAlign: TextAlign.center,
+              child: Padding(
+                padding: EdgeInsets.all(20.0),
+                child: Column(
+                  children: [
+                    Icon(Icons.sentiment_dissatisfied_sharp),
+                    Text(
+                      'Your watchlist is currently empty.\nPlease select a stock.',
+                      style: TextStyle(fontSize: 16, color: Colors.grey),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
               ),
             )
           : SizedBox(

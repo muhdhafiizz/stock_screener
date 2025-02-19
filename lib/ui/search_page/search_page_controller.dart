@@ -17,10 +17,14 @@ class SearchProvider with ChangeNotifier {
     searchController.addListener(_onSearchChanged);
   }
 
-  void _loadStocks() async {
+  Future<void> _loadStocks() async {
     _allStocks = await _repository.fetchStockListings();
     _filteredStocks = _allStocks;
     notifyListeners();
+  }
+
+  Future<void> refreshStocks() async {
+    await _loadStocks();
   }
 
   void _onSearchChanged() {

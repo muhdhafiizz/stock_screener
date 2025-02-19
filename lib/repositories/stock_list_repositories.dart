@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -19,7 +18,8 @@ class StockRepository {
     _cacheBox = Hive.box<StockListing>(_cacheBoxName);
   }
 
-  Future<List<StockListing>?> fetchStockListings({String? date, String state = "active"}) async {
+  Future<List<StockListing>?> fetchStockListings(
+      {String? date, String state = "active"}) async {
     if (_cacheBox.isNotEmpty) {
       debugPrint("📦 Using cached stock data");
       return _cacheBox.values.toList();
@@ -32,34 +32,35 @@ class StockRepository {
     debugPrint("🌍 Fetching stock listings from: $uri");
     final response = await http.get(uri);
 
-    _rateLimitExceeded = false; 
-    
+    _rateLimitExceeded = false;
+
     debugPrint("📡 API Response Status: ${response.statusCode}");
     if (response.statusCode == 200) {
-      final Map<String, dynamic> jsonData = json.decode(response.body);
-      if (response.body.trim().isEmpty || response.body == "{}") {
+      if (response.body.trim().isEmpty) {
         debugPrint("⚠️ No data received from API.");
         return [];
       }
 
-      if (jsonData.containsKey("Information") || (jsonData.containsKey("Note"))) {
+      if (response.body.contains("Information") ||
+          response.body.contains("Note")) {
         debugPrint("⚠️ API rate limit reached.");
-        _rateLimitExceeded = true; 
-        return null; 
+        _rateLimitExceeded = true;
+        return null;
       }
 
       try {
-        List<List<dynamic>> csvData = const CsvToListConverter().convert(response.body);
+        List<List<dynamic>> csvData =
+            const CsvToListConverter().convert(response.body);
 
         if (csvData.isEmpty || csvData.length == 1) {
           debugPrint("⚠️ Parsed CSV data is empty.");
           return [];
         }
 
-        csvData.removeAt(0);
-        List<StockListing> stocks = csvData
-            .map((row) => StockListing.fromCsv(row.map((e) => e.toString()).toList()))
-            .toList();
+        csvData.removeAt(0); 
+        List<StockListing> stocks = csvData.map((row) {
+          return StockListing.fromCsv(row.map((e) => e.toString()).toList());
+        }).toList();
 
         debugPrint("✅ Successfully parsed ${stocks.length} stocks.");
 
@@ -74,7 +75,8 @@ class StockRepository {
         return [];
       }
     } else {
-      debugPrint("❌ Failed to load stock listings. Status Code: ${response.statusCode}");
+      debugPrint(
+          "❌ Failed to load stock listings. Status Code: ${response.statusCode}");
       throw Exception("Failed to load stock listings");
     }
   }
