@@ -35,18 +35,19 @@ class StockRepository {
     _rateLimitExceeded = false;
 
     debugPrint("📡 API Response Status: ${response.statusCode}");
+    debugPrint(response.body);
     if (response.statusCode == 200) {
       if (response.body.trim().isEmpty) {
         debugPrint("⚠️ No data received from API.");
         return [];
       }
 
-      if (response.body.contains("Information") ||
-          response.body.contains("Note")) {
-        debugPrint("⚠️ API rate limit reached.");
-        _rateLimitExceeded = true;
-        return null;
-      }
+      // if (response.body.contains("Information") ||
+      //     response.body.contains("Note")) {
+      //   debugPrint("⚠️ API rate limit reached.");
+      //   _rateLimitExceeded = true;
+      //   return null;
+      // }
 
       try {
         List<List<dynamic>> csvData =

@@ -28,14 +28,11 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await Hive.initFlutter();
-  
+
   Hive.registerAdapter(StockListingAdapter());
   Hive.registerAdapter(CompanyOverviewAdapter());
-   Hive.registerAdapter(StockChartDataAdapter());
+  Hive.registerAdapter(StockChartDataAdapter());
   await openHiveBoxes();
-  
-
-  
 
   final stockRepository = StockChartRepository();
 
@@ -52,7 +49,8 @@ class MyApp extends StatelessWidget {
   final StockChartRepository stockRepository;
   const MyApp({super.key, required this.stockRepository});
 
-  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  static final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext context) {
@@ -65,8 +63,10 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => CompanyProvider()),
         ChangeNotifierProvider(create: (_) => SearchProvider()),
         ChangeNotifierProvider(create: (_) => WatchlistProvider()),
-        ChangeNotifierProvider(create: (_) => StockChartProviders(stockRepository)),
-        ChangeNotifierProvider(create: (_) => StockPriceProvider(StockPriceRepository())),
+        ChangeNotifierProvider(
+            create: (_) => StockChartProviders(stockRepository)),
+        ChangeNotifierProvider(
+            create: (_) => StockPriceProvider(StockPriceRepository())),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

@@ -242,14 +242,9 @@ Widget _buildWatchlist() {
     builder: (context, watchlistProvider, stockPriceProvider, child) {
       final watchlist = watchlistProvider.watchlist;
 
-      Future.microtask(() {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
         for (var stock in watchlist) {
-          if (!stockPriceProvider.stockPrices.containsKey(stock.symbol)) {
-            stockPriceProvider.fetchStockPrice(stock.symbol);
-            print("Fetching price for: \${stock.symbol}");
-          } else {
-            print("Price already available for: \${stock.symbol}");
-          }
+          stockPriceProvider.fetchStockPrice(stock.symbol);
         }
       });
 
