@@ -7,7 +7,7 @@ import 'package:stock_screener/ui/profile_page/profile_page_view.dart';
 
 
 class BottomNavView extends StatelessWidget {
-  BottomNavView({Key? key}) : super(key: key);
+  BottomNavView({super.key});
 
   final List<Widget> _screens = [
     const HomePage(),
@@ -25,7 +25,7 @@ class BottomNavView extends StatelessWidget {
         onTap: controller.changeTab,
         selectedItemColor: Colors.green[500],
         unselectedItemColor: Colors.grey,
-        items: [
+        items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
         ],

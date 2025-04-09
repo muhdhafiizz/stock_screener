@@ -32,13 +32,13 @@ class SearchPageView extends StatelessWidget {
                       onTap: () {
                         Navigator.pop(context);
                       },
-                      child: Icon(Icons.arrow_back)),
+                      child: const Icon(Icons.arrow_back)),
                   const SizedBox(
                     width: 10,
                   ),
                   const Text(
                     "Search",
-                    style: const TextStyle(
+                    style: TextStyle(
                         fontSize: 30, fontWeight: FontWeight.bold),
                   ),
                 ],
@@ -81,7 +81,7 @@ class SearchPageView extends StatelessWidget {
                         )
                       : Scrollbar(
                           thickness: 6.0,
-                          radius: Radius.circular(10),
+                          radius: const Radius.circular(10),
                           child: ListView.builder(
                             physics: const AlwaysScrollableScrollPhysics(),
                             itemCount:
@@ -89,7 +89,7 @@ class SearchPageView extends StatelessWidget {
                             itemBuilder: (context, index) {
                               final stock =
                                   searchProvider.filteredStocks?[index];
-                              if (stock == null) return SizedBox.shrink();
+                              if (stock == null) return const SizedBox.shrink();
 
                               return InkWell(
                                 onTap: () {

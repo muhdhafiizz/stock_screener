@@ -31,7 +31,7 @@ class SignupForm extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Spacer(),
+          const Spacer(),
           const Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [

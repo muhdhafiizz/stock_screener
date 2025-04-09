@@ -78,7 +78,7 @@ Widget _buildTopNavBar(BuildContext context) {
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
       Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(
+        const Text(
           "Welcome",
         ),
         Text(
@@ -87,7 +87,7 @@ Widget _buildTopNavBar(BuildContext context) {
         ),
       ]),
       GestureDetector(
-        child: Icon(Icons.search),
+        child: const Icon(Icons.search),
         onTap: () {
           Navigator.push(
             context,
@@ -353,7 +353,7 @@ Widget _buildWatchlist() {
                                                       TextStyle(fontSize: 14),
                                                 ),
                                                 Text(
-                                                  '${stockData.price.toStringAsFixed(2)}',
+                                                  stockData.price.toStringAsFixed(2),
                                                   style: const TextStyle(
                                                       fontSize: 14,
                                                       fontWeight:

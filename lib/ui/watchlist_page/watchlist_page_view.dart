@@ -13,7 +13,7 @@ class WatchlistPageView extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.all(20),
+          padding: const EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -24,13 +24,13 @@ class WatchlistPageView extends StatelessWidget {
                       onTap: () {
                         Navigator.pop(context);
                       },
-                      child: Icon(Icons.arrow_back)),
-                  SizedBox(
+                      child: const Icon(Icons.arrow_back)),
+                  const SizedBox(
                     width: 10,
                   ),
-                  Text(
+                  const Text(
                     "Watchlist",
-                    style: const TextStyle(
+                    style: TextStyle(
                         fontSize: 30, fontWeight: FontWeight.bold),
                   ),
                 ],

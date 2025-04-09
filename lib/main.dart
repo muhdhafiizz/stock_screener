@@ -11,7 +11,6 @@ import 'package:stock_screener/providers/watchlist_provider.dart';
 import 'package:stock_screener/repositories/stock_price_repository.dart';
 import 'package:stock_screener/ui/bottom_navbar/bottom_navbar_view.dart';
 import 'package:stock_screener/ui/landing_page/landing_page_view.dart';
-import 'package:stock_screener/ui/profile_page/profile_page_controller.dart';
 import 'package:stock_screener/ui/search_page/search_page_controller.dart';
 import 'package:stock_screener/ui/splash_screen/splash_screen.dart';
 
@@ -58,7 +57,6 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => BottomNavController()),
         ChangeNotifierProvider(create: (_) => AuthNotifier()),
-        ChangeNotifierProvider(create: (_) => ProfileController()),
         ChangeNotifierProvider(create: (_) => StockProvider()..fetchStocks()),
         ChangeNotifierProvider(create: (_) => CompanyProvider()),
         ChangeNotifierProvider(create: (_) => SearchProvider()),

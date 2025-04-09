@@ -76,7 +76,7 @@ Widget _buildCompanyDetails(CompanyOverview company, BuildContext context) {
                           fontWeight: FontWeight.bold,
                           overflow: TextOverflow.visible),
                       maxLines: 10),
-                  SizedBox(
+                  const SizedBox(
                     height: 8,
                   ),
                   Text(

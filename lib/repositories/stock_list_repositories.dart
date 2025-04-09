@@ -42,12 +42,6 @@ class StockRepository {
         return [];
       }
 
-      // if (response.body.contains("Information") ||
-      //     response.body.contains("Note")) {
-      //   debugPrint("⚠️ API rate limit reached.");
-      //   _rateLimitExceeded = true;
-      //   return null;
-      // }
 
       try {
         List<List<dynamic>> csvData =
